@@ -3,9 +3,9 @@ from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
-    path('stepper-motor-control-mode/', views.control_mode, name="stepper-motor-control-mode"),
-    path('stepper-motor-data-table/', views.data_table, name="stepper-motor-data-table"),
-    path('receive-stepper-data/', views.receive_stepper_data, name="stepper-motor-receive-data"),
-    path('stepper-motor-graph/', views.graph, name="stepper-motor-graph"),
+    path('multi-axis-robot-control-mode/', views.control_mode, name="multi-axis-robot-control-mode"),
+    path('multi-axis-robot-data-table/', views.data_table, name="multi-axis-robot-data-table"),
+    path('receive-stepper-data/', views.receive_stepper_data, name="multi-axis-robot-receive-data"),
+    path('multi-axis-robot-graph/', views.graph, name="multi-axis-robot-graph"),
 
 ]
