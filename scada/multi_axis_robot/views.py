@@ -6,14 +6,14 @@ from django.shortcuts import render, HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 from django.conf import settings
-from stepper_motor import utils, models
+from multi_axis_robot import utils, models
 
 
 def control_mode(request):
 
     return render(
                     request,
-                    "stepper_motor/control_mode.html",
+                    "multi_axis_robot/control_mode.html",
                     {
                     }
     )
@@ -24,18 +24,18 @@ def data_table(request):
     # It had issues as if we were writing to the cached JSON
 
     '''
-    json_data_path = os.path.join(settings.BASE_DIR, "Extras/stepper_motor.json")
+    json_data_path = os.path.join(settings.BASE_DIR, "Extras/multi_axis_robot.json")
     data = utils.read_json_file(json_data_path)
     '''
 
     # Get the latest timestamp out of the database 
-    latest_timestamp = models.StepperMotorDataPoint.objects.order_by('-timestamp').first()
+    latest_timestamp = models.MultiAxisDataPoint.objects.order_by('-timestamp').first()
 
-    recent_data_points = models.StepperMotorDataPoint.objects.filter(timestamp=latest_timestamp.timestamp)
+    recent_data_points = models.MultiAxisDataPoint.objects.filter(timestamp=latest_timestamp.timestamp)
 
     return render(
                     request,
-                    "stepper_motor/data_table.html",
+                    "multi_axis_robot/data_table.html",
                     {
                         'data': recent_data_points,
                     }
@@ -49,7 +49,7 @@ def graph(request):
     tag_name = None
 
     # Query the step motor DP table for distinct (unique) values in the tag_name field
-    tag_names = models.StepperMotorDataPoint.objects.values_list('tag_name').distinct()
+    tag_names = models.MultiAxisDataPoint.objects.values_list('tag_name').distinct()
 
     # Cast our queryset to a list of tuples as its easier to deal with
     tag_names = list(tag_names)
@@ -59,7 +59,7 @@ def graph(request):
 
     if request.method=="POST":
         tag_name = request.POST['tag_name']
-        data = models.StepperMotorDataPoint.objects.filter(tag_name=tag_name).order_by('timestamp')
+        data = models.MultiAxisDataPoint.objects.filter(tag_name=tag_name).order_by('timestamp')
     
         for data_point in data:
             value_list.append(data_point.tag_value)
@@ -68,7 +68,7 @@ def graph(request):
 
     return render(
                     request,
-                    "stepper_motor/graph.html",
+                    "multi_axis_robot/graph.html",
                     {
                         'chosen_tag': tag_name,
                         'tag_options': tag_names,

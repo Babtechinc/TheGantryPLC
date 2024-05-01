@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'home',
     'mini_factory',
     'schneider_plc',
-    'stepper_motor',
+    'multi_axis_robot',
 ]
 
 MIDDLEWARE = [

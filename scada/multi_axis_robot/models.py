@@ -1,6 +1,6 @@
 from django.db import models
 
-class StepperMotorDataPoint(models.Model):
+class MultiAxisDataPoint(models.Model):
 	# Tag Name
 	tag_name = models.CharField(max_length=256)
 	# Tag Value/ Status
