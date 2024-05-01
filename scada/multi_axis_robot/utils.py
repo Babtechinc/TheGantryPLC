@@ -12,14 +12,14 @@ def save_data(multi_axis_robot_dict):
     del multi_axis_robot_dict['timestamp']
 
     for key, value in multi_axis_robot_dict.items():
-    	existing_data = models.MultiAxisDataPoint.objects.filter(tag_name=key,	timestamp=updated_timestamp,	)
+        existing_data = models.MultiAxisDataPoint.objects.filter(tag_name=key,	timestamp=updated_timestamp,	)
         if existing_data.exists():
-    		print("Data point already exists in DB")
-    	else:
-	        TempDataPoint = models.MultiAxisDataPoint(  tag_name=key,  tag_value=value, timestamp=updated_timestamp,  )
-	        TempDataPoint.save()
+            print("Data point already exists in DB")
+        else:
+            TempDataPoint = models.MultiAxisDataPoint(  tag_name=key,  tag_value=value, timestamp=updated_timestamp,  )
+            TempDataPoint.save()
 
 def read_json_file(filename):
-	with open(filename) as f:
-	    data = json.load(f)
-	return data
+    with open(filename) as f:
+        data = json.load(f)
+    return data
