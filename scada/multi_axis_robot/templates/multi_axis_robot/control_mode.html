@@ -1,6 +1,154 @@
 {% extends "base.html" %}
 {% block page_styles %}{% endblock %}
-{% block page_name %}Stepper Motor Control Mode{% endblock %}
+{% block page_name %}Multi Axis Robot{% endblock %}
 {% block page_buttons %}{% endblock %}
-{% block content %}{% endblock %}
-{% block page_scripts %}{% endblock %}
+{% block content %}
+<form id="myForm" class="row g-3">
+<div class="">
+                <button type="submit" class="btn btn-primary mb-3">Write To PLC</button>
+              </div>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Tag</th>
+      <th scope="col">Tag Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">1</th>
+         <td>
+              <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Tag</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Speed Of X Stepper Motor">
+              </div>
+            </td>
+        <td>
+              <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden">Change Speed</label>
+                <input type="number" min="1" max="100000" class="form-control" id="inputSpeedOfStepperx" >
+              </div>
+
+       </td>
+    </tr>
+    <tr>
+      <th scope="row">2</th>
+         <td>
+              <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Tag</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Speed Of Z Stepper Motor">
+              </div>
+            </td>
+        <td>
+              <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden">Change Speed</label>
+                <input type="number" min="1" max="100000" class="form-control" id="inputSpeedOfStepperz" >
+              </div>
+
+       </td>
+    </tr>
+    <tr>
+      <th scope="row">3</th>
+      <td>
+      <div class="col-auto">
+        <label for="staticEmail2" class="visually-hidden">Change Direction Of Stepper Motor Z</label>
+        <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Change Direction Of StepperMotor Z">
+      </div>
+      </td>
+      <td>
+      <div class="col-auto">
+              <div class="btn-group" role="group" aria-label="Change Direction Of StepperMotor Z">
+                  <input type="radio" class="btn-check" name="btnradio" id="DirectionOfStepperZ" autocomplete="off" checked>
+                  <label class="btn btn-outline-primary" for="btnradio1">Right</label>
+
+                  <input type="radio" class="btn-check" name="btnradio" id="DirectionOfStepperZ" autocomplete="off">
+                  <label class="btn btn-outline-primary" for="btnradio2">Left</label>
+              </div>
+      </div></td>
+
+    </tr>
+    <tr>
+      <th scope="row">4</th>
+      <td>
+      <div class="col-auto">
+        <label for="staticEmail2" class="visually-hidden">Change Direction Of StepperMotor X</label>
+        <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Change Direction Of StepperMotor X">
+      </div>
+      </td>
+      <td>
+      <div class="col-auto">
+              <div class="btn-group" role="group" aria-label=">Change Direction Of Small StepperMotor">
+                  <input type="radio" class="btn-check" name="btnradio" id="DirectionOfStepperX" autocomplete="off" checked>
+                  <label class="btn btn-outline-primary" for="btnradio1">Right</label>
+
+                  <input type="radio" class="btn-check" name="btnradio" id="DirectionOfStepperX" autocomplete="off">
+                  <label class="btn btn-outline-primary" for="btnradio2">Left</label>
+              </div>
+      </div></td>
+
+    </tr>
+
+  </tbody>
+</table>
+</form>
+<form>
+
+    <hr>
+<div class="bd-example">
+
+
+<form class="row row-cols-lg-auto g-3 align-items-center">
+    <h3>
+ Run A Predefine Program
+  <small class="text-muted">Try It Out</small>
+</h3>
+  <div class="col-12">
+    <label class="visually-hidden" for="inlineFormInputGroupUsername">Select a Program To Run</label>
+{#    <div class="input-group">#}
+{#      <div class="input-group-text">@</div>#}
+{#      <input type="text" class="form-control" id="inlineFormInputGroupUsername" placeholder="Username">#}
+{#    </div>#}
+  </div>
+
+  <div class="col-12">
+    <label class="visually-hidden" for="inlineFormSelectPref">Preference</label>
+    <select class="form-select" id="inlineFormSelectPref">
+      <option selected="">Choose...</option>
+      <option value="1">One</option>
+      <option value="2">Two</option>
+      <option value="3">Three</option>
+    </select>
+  </div>
+
+    <div>&nbsp;</div>
+
+
+  <div class="col-12">
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </div>
+</form>
+</div>
+</form>
+{% endblock %}
+{% block page_scripts %}
+
+    <script>
+    $(document).ready(function(){
+    $("#myForm").submit(function(event){
+        // Prevent the form from submitting normally
+        event.preventDefault();
+
+        // Get the form data
+        var formData = $(this).serialize();
+
+        // Post the form data to the server
+        $.post("your-server-url.php", formData, function(response){
+            // Handle the response from the server
+            console.log(response);
+        });
+    });
+});
+
+    </script>
+{% endblock %}
