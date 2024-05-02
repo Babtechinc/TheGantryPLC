@@ -97,7 +97,27 @@ def receive_stepper_data(request):
 def receive_write_to_plc(request):
     if request.method=='POST':
         # Take our received JSON data and load that into python dictionary
-        data_dict =json.loads(request.body)
+        print(request.body)
+        print(request.POST)
+        data_dict = {}
+        # data_dict =json.loads(request.body)
+        # If our data is not empty
+        if data_dict:
+            utils.save_data(data_dict)
+            # Return success response code
+            return HttpResponse(status=200)
+        # if empty return no data response code
+        else:
+            # Return no content response code
+            return HttpResponse(status=204)
+@csrf_exempt
+def write_to_plc_program(request):
+    if request.method=='POST':
+        # Take our received JSON data and load that into python dictionary
+        print(request.body)
+        print(request.POST)
+        data_dict = {}
+        # data_dict =json.loads(request.body)
         # If our data is not empty
         if data_dict:
             utils.save_data(data_dict)

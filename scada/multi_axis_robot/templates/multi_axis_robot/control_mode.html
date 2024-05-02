@@ -27,7 +27,7 @@
         <td>
               <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden">Change Speed</label>
-                <input type="number" min="1" max="100000" class="form-control" id="inputSpeedOfStepperx" >
+                <input type="number" min="1" max="100000" class="form-control" name="inputSpeedOfStepperx" id="inputSpeedOfStepperx" >
               </div>
 
        </td>
@@ -43,7 +43,7 @@
         <td>
               <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden">Change Speed</label>
-                <input type="number" min="1" max="100000" class="form-control" id="inputSpeedOfStepperz" >
+                <input type="number" min="1" max="100000" class="form-control" name="inputSpeedOfStepperz" id="inputSpeedOfStepperz" >
               </div>
 
        </td>
@@ -59,11 +59,11 @@
       <td>
       <div class="col-auto">
               <div class="btn-group" role="group" aria-label="Change Direction Of StepperMotor Z">
-                  <input type="radio" class="btn-check" name="btnradio" id="DirectionOfStepperZ" autocomplete="off" checked>
+                  <input type="radio" class="btn-check" name="DirectionOfStepperZ" value="1" id="DirectionOfStepperZ" autocomplete="off" checked>
                   <label class="btn btn-outline-primary" for="btnradio1">Right</label>
 
-                  <input type="radio" class="btn-check" name="btnradio" id="DirectionOfStepperZ" autocomplete="off">
-                  <label class="btn btn-outline-primary" for="btnradio2">Left</label>
+                  <input type="radio" class="btn-check" name="DirectionOfStepperZ" value="0" id="DirectionOfStepperZ" autocomplete="off">
+                  <label class="btn btn-outline-primary" for="DirectionOfStepperZ">Left</label>
               </div>
       </div></td>
 
@@ -79,10 +79,10 @@
       <td>
       <div class="col-auto">
               <div class="btn-group" role="group" aria-label=">Change Direction Of Small StepperMotor">
-                  <input type="radio" class="btn-check" name="btnradio" id="DirectionOfStepperX" autocomplete="off" checked>
+                  <input type="radio" class="btn-check" name="DirectionOfStepperX" value="0" id="DirectionOfStepperX" autocomplete="off" checked>
                   <label class="btn btn-outline-primary" for="btnradio1">Right</label>
 
-                  <input type="radio" class="btn-check" name="btnradio" id="DirectionOfStepperX" autocomplete="off">
+                  <input type="radio" class="btn-check" name="DirectionOfStepperX" value="1" id="DirectionOfStepperX" autocomplete="off">
                   <label class="btn btn-outline-primary" for="btnradio2">Left</label>
               </div>
       </div></td>
@@ -92,7 +92,7 @@
   </tbody>
 </table>
 </form>
-<form>
+<form id="myFormProgram">
 
     <hr>
 <div class="bd-example">
@@ -112,8 +112,8 @@
   </div>
 
   <div class="col-12">
-    <label class="visually-hidden" for="inlineFormSelectPref">Preference</label>
-    <select class="form-select" id="inlineFormSelectPref">
+    <label class="visually-hidden" for="SelectProgram">Preference</label>
+    <select class="form-select" id="SelectProgram" name="SelectProgram">
       <option selected="">Choose...</option>
       <option value="1">One</option>
       <option value="2">Two</option>
@@ -133,6 +133,7 @@
 {% endblock %}
 {% block page_scripts %}
 
+<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
     <script>
     $(document).ready(function(){
     $("#myForm").submit(function(event){
@@ -143,7 +144,20 @@
         var formData = $(this).serialize();
 
         // Post the form data to the server
-        $.post("your-server-url.php", formData, function(response){
+        $.post("{% url "multi-axis-robot-receive-write-to-plc" %}", formData, function(response){
+            // Handle the response from the server
+            console.log(response);
+        });
+    });
+    $("#myFormProgram").submit(function(event){
+        // Prevent the form from submitting normally
+        event.preventDefault();
+
+        // Get the form data
+        var formData = $(this).serialize();
+
+        // Post the form data to the server
+        $.post("{% url "multi-axis-robot-write-to-plc-program" %}", formData, function(response){
             // Handle the response from the server
             console.log(response);
         });
