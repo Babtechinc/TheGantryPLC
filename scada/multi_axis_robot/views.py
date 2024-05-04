@@ -6,6 +6,9 @@ from django.shortcuts import render, HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 from django.conf import settings
+from pymodbus.constants import Endian
+from pymodbus.payload import BinaryPayloadBuilder
+
 from multi_axis_robot import utils, models
 from scada.Other.Utils import connect_to_plc
 
@@ -106,28 +109,34 @@ def receive_write_to_plc(request):
         print(client.read_holding_registers(11).registers)
         if 'inputSpeedOfStepperx' in request.POST:
             inputSpeedOfStepperx = int(request.POST['inputSpeedOfStepperx'])
-            print('hhhhrhrhhr')
             if 'DirectionOfStepperX' in request.POST:
                 
                 
                 DirectionOfStepperX = request.POST['DirectionOfStepperX']
                 if DirectionOfStepperX =='0':
-                    print('hhhhrhrh3434h2r')
-                    inputSpeedOfStepperx = -1 * inputSpeedOfStepperx
 
-            print(inputSpeedOfStepperx)
-            reg = client.write_register(11,inputSpeedOfStepperx)
+                    inputSpeedOfStepperx= -1 * inputSpeedOfStepperx
+                    builder = BinaryPayloadBuilder(byteorder=Endian.Big, wordorder=Endian.Big)
+                    builder.add_16bit_int(inputSpeedOfStepperx)
+                    payload = builder.build()
+
+                    client.write_registers(10 + 1, payload, skip_encode=True, unit=1)
+                else:
+
+                    reg = client.write_register(10+1,inputSpeedOfStepperx)
         if 'inputSpeedOfStepperz' in request.POST:
             inputSpeedOfStepperz = int(request.POST['inputSpeedOfStepperz'])
-            
-            print('hhhhrhrhhr')
+
             if 'DirectionOfStepperZ' in request.POST:
-                
-                print('hhhhrhrhhr2')
                 DirectionOfStepperZ = request.POST['DirectionOfStepperZ']
                 if DirectionOfStepperZ =='0':
-                    inputSpeedOfStepperZ= -1 * inputSpeedOfStepperz
-            reg = client.write_register(12,inputSpeedOfStepperz)
+                    inputSpeedOfStepperz= -1 * inputSpeedOfStepperz
+                    builder = BinaryPayloadBuilder(byteorder=Endian.Big, wordorder=Endian.Big)
+                    builder.add_16bit_int(inputSpeedOfStepperz)
+                    payload = builder.build()
+                    client.write_registers(11 + 1, payload, skip_encode=True, unit=1)
+                else:
+                    reg = client.write_register(11+1,inputSpeedOfStepperz)
     
         return HttpResponse(status=200)
         # if empty return no data response code
