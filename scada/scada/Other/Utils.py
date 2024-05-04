@@ -1,7 +1,7 @@
 from pymodbus.client import ModbusTcpClient
 
 
-def connect_to_click_plc():
+def connect_to_plc():
     client = ModbusTcpClient('192.168.2.23', port="502")
     client.connect()
     return client

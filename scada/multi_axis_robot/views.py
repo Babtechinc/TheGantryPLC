@@ -7,6 +7,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 from django.conf import settings
 from multi_axis_robot import utils, models
+from scada.Other.Utils import connect_to_plc
 
 
 def control_mode(request):
@@ -117,6 +118,12 @@ def write_to_plc_program(request):
         print(request.body)
         print(request.POST)
         data_dict = {}
+
+        client = connect_to_plc()
+        reg = client.write_register(11, 2000)
+        # print(reg)
+        print(client.read_holding_registers(11).registers)
+
         # data_dict =json.loads(request.body)
         # If our data is not empty
         if data_dict:
