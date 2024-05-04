@@ -131,7 +131,7 @@ def receive_write_to_plc(request):
                 DirectionOfStepperZ = request.POST['DirectionOfStepperZ']
                 if DirectionOfStepperZ =='0':
                     inputSpeedOfStepperz= -1 * inputSpeedOfStepperz
-                    builder = BinaryPayloadBuilder(byteorder=Endian.Big, wordorder=Endian.Big)
+                    builder = BinaryPayloadBuilder(byteorder=Endian.BIG, wordorder=Endian.BIG)
                     builder.add_16bit_int(inputSpeedOfStepperz)
                     payload = builder.build()
                     client.write_registers(11 + 1, payload, skip_encode=True, unit=1)
