@@ -101,16 +101,37 @@ def receive_write_to_plc(request):
         print(request.body)
         print(request.POST)
         data_dict = {}
-        # data_dict =json.loads(request.body)
-        # If our data is not empty
-        if data_dict:
-            utils.save_data(data_dict)
-            # Return success response code
-            return HttpResponse(status=200)
+        client = connect_to_plc()
+
+        print(client.read_holding_registers(11).registers)
+        if 'inputSpeedOfStepperx' in request.POST:
+            inputSpeedOfStepperx = int(request.POST['inputSpeedOfStepperx'])
+            print('hhhhrhrhhr')
+            if 'DirectionOfStepperX' in request.POST:
+                
+                
+                DirectionOfStepperX = request.POST['DirectionOfStepperX']
+                if DirectionOfStepperX =='0':
+                    print('hhhhrhrh3434h2r')
+                    inputSpeedOfStepperx = -1 * inputSpeedOfStepperx
+
+            print(inputSpeedOfStepperx)
+            reg = client.write_register(11,inputSpeedOfStepperx)
+        if 'inputSpeedOfStepperz' in request.POST:
+            inputSpeedOfStepperz = int(request.POST['inputSpeedOfStepperz'])
+            
+            print('hhhhrhrhhr')
+            if 'DirectionOfStepperZ' in request.POST:
+                
+                print('hhhhrhrhhr2')
+                DirectionOfStepperZ = request.POST['DirectionOfStepperZ']
+                if DirectionOfStepperZ =='0':
+                    inputSpeedOfStepperZ= -1 * inputSpeedOfStepperz
+            reg = client.write_register(12,inputSpeedOfStepperz)
+    
+        return HttpResponse(status=200)
         # if empty return no data response code
-        else:
-            # Return no content response code
-            return HttpResponse(status=204)
+        
 @csrf_exempt
 def write_to_plc_program(request):
     if request.method=='POST':
@@ -119,11 +140,7 @@ def write_to_plc_program(request):
         print(request.POST)
         data_dict = {}
 
-        client = connect_to_plc()
-        reg = client.write_register(11, 2000)
-        # print(reg)
-        print(client.read_holding_registers(11).registers)
-
+        
         # data_dict =json.loads(request.body)
         # If our data is not empty
         if data_dict:
