@@ -14,12 +14,24 @@ from scada.Other.Utils import connect_to_plc
 
 
 def control_mode(request):
+    data = {
+                    }
+    try:
+
+        client = connect_to_plc()
+        data={
+            "inputSpeedOfStepperx":client.read_holding_registers(10 + 1, ).registers,
+            "inputSpeedOfStepperz":client.read_holding_registers(11 + 1, ).registers,
+            "DirectionOfStepperX":'0' if client.read_holding_registers(10 + 1, ).registers < 0 else '1',
+            "DirectionOfStepperZ":'0' if client.read_holding_registers(11 + 1, ).registers < 0 else '1',
+        }
+    except:
+        print("No Connection ")
 
     return render(
                     request,
                     "multi_axis_robot/control_mode.html",
-                    {
-                    }
+                    data
     )
 
 
@@ -116,7 +128,7 @@ def receive_write_to_plc(request):
                 if DirectionOfStepperX =='0':
 
                     inputSpeedOfStepperx= -1 * inputSpeedOfStepperx
-                    builder = BinaryPayloadBuilder(byteorder=Endian.Big, wordorder=Endian.Big)
+                    builder = BinaryPayloadBuilder(byteorder=Endian.BIG, wordorder=Endian.BIG)
                     builder.add_16bit_int(inputSpeedOfStepperx)
                     payload = builder.build()
 

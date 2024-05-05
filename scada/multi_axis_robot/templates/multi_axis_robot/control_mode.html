@@ -27,7 +27,7 @@
         <td>
               <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden">Change Speed</label>
-                <input required type="number" min="1" max="100000" class="form-control" name="inputSpeedOfStepperx" id="inputSpeedOfStepperx" >
+                <input required type="number" min="1" max="100000" class="form-control" name="inputSpeedOfStepperx" value="{{ inputSpeedOfStepperx }}" id="inputSpeedOfStepperx" >
               </div>
 
        </td>
@@ -43,7 +43,7 @@
         <td>
               <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden">Change Speed</label>
-                <input required type="number" min="1" max="100000" class="form-control" name="inputSpeedOfStepperz" id="inputSpeedOfStepperz" >
+                <input required type="number" min="1" max="100000" class="form-control" name="inputSpeedOfStepperz" value="{{ inputSpeedOfStepperz }}"  id="inputSpeedOfStepperz" >
               </div>
 
        </td>
@@ -59,10 +59,10 @@
       <td>
       <div class="col-auto">
               <div class="btn-group" role="group" aria-label="Change Direction Of StepperMotor Z">
-                  <input type="radio" class="btn-check" name="DirectionOfStepperZ" value="1" id="DirectionOfStepperZa" autocomplete="off" checked>
+                  <input type="radio" class="btn-check" name="DirectionOfStepperZ" value="1" id="DirectionOfStepperZa" autocomplete="off" {% if DirectionOfStepperZ == '1'%}checked{% endif %}  >
                   <label class="btn btn-outline-primary" for="DirectionOfStepperZa">Right</label>
 
-                  <input type="radio" class="btn-check" name="DirectionOfStepperZ" value="0" id="DirectionOfStepperZb" autocomplete="off">
+                  <input type="radio" class="btn-check" name="DirectionOfStepperZ" value="0" id="DirectionOfStepperZb" autocomplete="off" {% if DirectionOfStepperZ == '0'%}checked{% endif %} >
                   <label class="btn btn-outline-primary" for="DirectionOfStepperZb">Left</label>
               </div>
       </div></td>
@@ -79,10 +79,10 @@
       <td>
       <div class="col-auto">
               <div class="btn-group" role="group" aria-label=">Change Direction Of Small StepperMotor">
-                  <input type="radio" class="btn-check" name="DirectionOfStepperX" value="1" id="btnradio1" autocomplete="off" checked >
+                  <input type="radio" class="btn-check" name="DirectionOfStepperX" value="1" {% if DirectionOfStepperX == '1'%}checked{% endif %}  id="btnradio1" autocomplete="off" checked >
                   <label class="btn btn-outline-primary" for="btnradio1">Right</label>
 
-                  <input type="radio" class="btn-check" name="DirectionOfStepperX" value="0" id="btnradio2" autocomplete="off">
+                  <input type="radio" class="btn-check" name="DirectionOfStepperX" {% if DirectionOfStepperX == '0'%}checked{% endif %}  value="0" id="btnradio2" autocomplete="off">
                   <label class="btn btn-outline-primary" for="btnradio2">Left</label>
               </div>
       </div></td>
