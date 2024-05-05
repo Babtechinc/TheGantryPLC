@@ -1,60 +1,92 @@
-from pymodbus.client import ModbusTcpClient
-import time
-import json
-import requests
 from datetime import datetime
+import json
+import time
+from pymodbus.client import ModbusTcpClient
+import requests
+
+# Advanced PLCs Python Code from 03/19/2024
+# This code is written in the Pep 8 styling guide
+# and is checked via pycodestyle
+
+click_ip_address = '192.168.2.23'
 
 
-class plc_tag():
+class PLCTag():
     def __init__(self, name, modbus_address, value):
         self.name = name
         self.modbus_address = modbus_address
         self.value = value
 
 
-def connect_to_click_plc():
-    client = ModbusTcpClient('192.168.2.23', port="502")
-    client.connect()
-    return client
+def write_modbus_coils(client, coil_address, value):
+
+    result = None
+    # Take care of the offset between pymodbus and the click plc
+    coil_address = coil_address - 1
+
+    # pymodbus built in write coil function
+    result = client.write_coil(coil_address, value)
+
+    return result
 
 
-def read_coils(client, coil_number, number_of_coils=1):
-    # Address the offset coil
-    coil_number = coil_number - 1
-    result = client.read_coils(coil_number, number_of_coils)
+def read_modbus_coils(client, coil_address, number_of_coils=1):
+    # Predefining a empty list to store our result
+    result_list = []
+
+    # Take care of the offset between pymodbus and the click plc
+    coil_address = coil_address - 1
+
+    # Read the modbus address values form the click PLC
+    result = client.read_coils(coil_address, number_of_coils)
+
+    # print("Response from PLC with pymodbus library", result.bits)
+
+    # storing our values form the plc in a list of length
+    # 0 to the number of coils we want to read
     result_list = result.bits[0:number_of_coils]
+
+    # print("Filtered result of only necessary values", result_list)
     return result_list
 
 
-def write_modbus_coil(client, coil_number, value):
-    coil_number = coil_number - 1
-    result = client.write_coils(coil_number, value)
+def pulse_stepper_motor(client, stepper_motor_pulse):
+    # Create Motor Pulse Object
+    # Turn on stepper motor pulse coil 16390
+    # wait for a certain amount of time
+    # Turn off stepper motor pulse coil 16390
+    # wait for a certain amount of time
+    write_modbus_coils(
+            client,
+            stepper_motor_pulse.modbus_address,
+            stepper_motor_pulse.value
+        )
 
 
-def close_connection_to_click(client):
+def connect_to_click_plc():
+    # Attempting to create connection to click PLC
+    # Return client object for other functions
+
+    print("Attempting to connect to PLC")
+
+    # Creating a client object with the parameters of the PLC IP and Port
+    click_plc_obj = ModbusTcpClient(click_ip_address, port='502')
+
+    # Attempt to connect to the PLC
+    click_plc_obj.connect()
+    print("connected to PLC")
+
+    # Return our PLC object
+    return click_plc_obj
+
+
+def disconnect_from_click_plc(client):
+    print("Disconnecting from click PLC")
     client.close()
 
-
-def pulse_stepper(client, motor_pulse_control):
-
-    write_modbus_coil(client, motor_pulse_control.modbus_address, True)
-    time.sleep(0.01)
-    write_modbus_coil(client, motor_pulse_control.modbus_address, False)
-    time.sleep(0.01)
-
-
-def change_motor_direction(client, motor_direction_feedback, motor_direction_control):
-
-    motor_direction = read_coils(client, motor_direction_feedback.modbus_address, 1)
-    print("Changing motor direction")
-    motor_direction = motor_direction[0]
-    write_modbus_coil(client, motor_direction_control.modbus_address, not motor_direction)
-
-
-def write_to_json_file(file_name, data_dict):
-    with open(file_name, "w") as file:
+def write_to_json_file(filename, data_dict):
+    with open(filename, "w") as file:
         json.dump(data_dict, file)
-
 
 def create_data_structure_for_cache(*args):
     # Creating tag dictionary
@@ -71,7 +103,6 @@ def create_data_structure_for_cache(*args):
 
     # Result dict = {"In Hand": True, ...., "timestamp": "04/24/2024, 3:37:15"}
     return result_dict
-
 
 def send_data_to_webserver(data_dict, session):
     # Convert from python dict to JSON string
@@ -90,56 +121,72 @@ def send_data_to_webserver(data_dict, session):
     # should be a response code of 200
     print(r.status_code)
 
-
 def main():
     tag_dict = {}
     
     # Create a session with our webserver to speed things up
     session = requests.Session()
+    # Create client object for the click PLC
+    # and connect to the PLC
+    client = connect_to_click_plc()
+    print("Initialize Axis")
+    # print("Turn off enable")
+    # write_modbus_coils(client, 5, False)
+    # time.sleep(1)
+    # write_modbus_coils(client, 18, True)
+    # time.sleep(5)
+    # write_modbus_coils(client, 18, False)
+    # time.sleep(1)
+    # write_modbus_coils(client, 5, True)
+    result = read_modbus_coils(client, 1)[0]
+    reg = client.write_register(11, 2000)
+    # print(reg)
+    # print(client.read_holding_registers(11).registers)
+    # print(result)
 
-    # Create our click PLC connection object
-    click_plc_connection = connect_to_click_plc()
+     # Create our objects for each PLC tag
+    sm_yellow_z_pos = PLCTag("Yellow SM Positon", 1, None)
+    sm_yellow_z_vel = PLCTag("Yellow SM Velocity", 2, None)
+    sm_blue_z_pos = PLCTag("Blue SM Positon", 1, None)
+    sm_blue_z_vel = PLCTag("Blue SM Velocity", 1, None)
+    sm_red_x_pos = PLCTag("Red SM Positon", 1, None)
+    sm_red_x_vel = PLCTag("Red SM Velocity", 1, None)
 
-    # Create our objects for each PLC tag
-    in_auto = plc_tag("In Auto", 1, None)
-    # in_hand = plc_tag("In Hand", 16386, None)
-    # e_stop = plc_tag("E-Stop", 16387, None)
-    # motor_pulse_feedback = plc_tag("Motor Pulse Feedback", 16388, None)
-    # motor_direction_feedback = plc_tag("Motor Direction Feedback", 16389, None)
-    # motor_pulse_control = plc_tag("Motor Pulse Control", 16390, None)
-    # motor_direction_control = plc_tag("Motor Direction Control", 16391, None)
+    write_modbus_coils(client, 10, True)
+    write_modbus_coils(client, 5, True)
+    time.sleep(1)
+    write_modbus_coils(client, 5, False)
 
-    # Use this for changing stepper motor direction
-    count = 0
-
-    # Run forever
     while True:
-        # Read the selector switch and E-Stop coils
-        data = read_coils(click_plc_connection, in_auto.modbus_address, 2)
-        in_auto.value = data[0]
-        print(data[0])
-        print(data[1])
-        # in_hand.value = data[1]
-        # e_stop.value = data[2]
-        # motor_pulse_feedback.value = data[3]
-        # motor_direction_feedback.value = data[4]
-        # motor_pulse_control.value = data[5]
-        # motor_direction_control.value = data[6]
-
-        # Pulse the stepper motor
-        # if in_auto.value is True and e_stop.value is False:
-        #     pulse_stepper(click_plc_connection, motor_pulse_control)
-        #     count += 1
-        #     if count == 200:
-        #         count = 0
-        #         change_motor_direction(click_plc_connection, motor_direction_feedback, motor_direction_control)
-
-        # if in_hand.value is True and e_stop.value is False:
-        #     print("In hand")
-
+        # print(client.read_holding_registers(0,6).registers)
+        dist_data = client.read_holding_registers(0,6).registers
+        sm_yellow_z_pos.value = dist_data[0]
+        sm_yellow_z_vel.value = dist_data[1]
+        sm_blue_z_pos.value = dist_data[2]
+        sm_blue_z_vel.value = dist_data[3]
+        sm_red_x_pos.value = dist_data[4]
+        sm_red_x_vel.value = dist_data[5]
+        result = read_modbus_coils(client, 1)[0]
+        # write_modbus_coils(client, 10, True)
+        # write_modbus_coils(client, 5, True)
+        # time.sleep(1)
+        # write_modbus_coils(client, 5, False)
+        if result:
+            # time.sleep(1)
+            write_modbus_coils(client, 18, True)
+            # time.sleep(5)
+            # write_modbus_coils(client, 18, False)
+            # time.sleep(1)
+            # write_modbus_coils(client, 5, True)
+            # time.sleep(1)
         # setup tag dictionary with unlimited arguments
         tag_dict = create_data_structure_for_cache(
-                                            in_auto,
+                                            sm_yellow_z_pos,
+                                            sm_yellow_z_vel,
+                                            sm_blue_z_pos,
+                                            sm_blue_z_vel,
+                                            sm_red_x_pos,
+                                            sm_red_x_vel,
                                             # in_hand,
                                             # e_stop,
                                             # motor_pulse_feedback,
@@ -148,8 +195,10 @@ def main():
                                             # motor_direction_control
                                         )
         send_data_to_webserver(tag_dict, session)
+        # print(result)
+        # time.sleep(1)
 
-    close_connection_to_click(click_plc_connection)
+
 
 
 if __name__ == '__main__':

@@ -16,17 +16,17 @@ from scada.Other.Utils import connect_to_plc
 def control_mode(request):
     data = {
                     }
-    try:
+    # try:
 
-        client = connect_to_plc()
-        data={
-            "inputSpeedOfStepperx":client.read_holding_registers(10 + 1, ).registers,
-            "inputSpeedOfStepperz":client.read_holding_registers(11 + 1, ).registers,
-            "DirectionOfStepperX":'0' if client.read_holding_registers(10 + 1, ).registers < 0 else '1',
-            "DirectionOfStepperZ":'0' if client.read_holding_registers(11 + 1, ).registers < 0 else '1',
-        }
-    except:
-        print("No Connection ")
+    client = connect_to_plc()
+    data={
+        "inputSpeedOfStepperx":client.read_holding_registers(11).registers[0],
+        "inputSpeedOfStepperz":client.read_holding_registers(12).registers[0],
+        "DirectionOfStepperX":'0' if client.read_holding_registers(10 + 1, ).registers[0] < 0 else '1',
+        "DirectionOfStepperZ":'0' if client.read_holding_registers(11 + 1, ).registers[0] < 0 else '1',
+    }
+    # except:
+    #     print("No Connection ")
 
     return render(
                     request,
