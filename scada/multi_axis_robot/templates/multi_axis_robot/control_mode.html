@@ -136,6 +136,10 @@
 <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
     <script>
     $(document).ready(function(){
+          setInterval(function(){
+                // Reload the table of values
+                $("#myForm").load(" #myForm");
+            }, 2000);
     $("#myForm").submit(function(event){
         // Prevent the form from submitting normally
         event.preventDefault();
