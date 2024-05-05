@@ -167,6 +167,18 @@ def main():
         sm_red_x_pos.value = dist_data[4]
         sm_red_x_vel.value = dist_data[5]
         result = read_modbus_coils(client, 1)[0]
+        # write_modbus_coils(client, 10, True)
+        # write_modbus_coils(client, 5, True)
+        # time.sleep(1)
+        # write_modbus_coils(client, 5, False)
+        if result:
+            # time.sleep(1)
+            write_modbus_coils(client, 18, True)
+            # time.sleep(5)
+            # write_modbus_coils(client, 18, False)
+            # time.sleep(1)
+            # write_modbus_coils(client, 5, True)
+            # time.sleep(1)
         # setup tag dictionary with unlimited arguments
         tag_dict = create_data_structure_for_cache(
                                             sm_yellow_z_pos,
@@ -175,8 +187,17 @@ def main():
                                             sm_blue_z_vel,
                                             sm_red_x_pos,
                                             sm_red_x_vel,
+                                            # in_hand,
+                                            # e_stop,
+                                            # motor_pulse_feedback,
+                                            # motor_direction_feedback,
+                                            # motor_pulse_control,
+                                            # motor_direction_control
                                         )
         send_data_to_webserver(tag_dict, session)
+        # print(result)
+        # time.sleep(1)
+
 
 
 

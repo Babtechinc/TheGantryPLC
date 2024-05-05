@@ -21,6 +21,52 @@
          <td>
               <div class="col-auto">
                 <label for="staticEmail2" class="visually-hidden">Tag</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Turn On The Motor">
+              </div>
+            </td>
+        <td>
+              <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden">Change Speed</label>
+                   <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                          <input type="radio" class="btn-check" style="background-color: red" name="turnOnMotor" id="turnOnMotor1" autocomplete="off" checked>
+                          <label class="btn btn-outline-danger" for="turnOnMotor1">Off</label>
+
+                          <input type="radio" class="btn-check" name="turnOnMotor" id="turnOnMotor2" autocomplete="off">
+                          <label class="btn btn-outline-success" for="turnOnMotor2">On</label>
+                   </div>
+
+                  </div>
+
+       </td>
+    </tr>
+    <tr>
+      <th scope="row">1</th>
+         <td>
+              <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Tag</label>
+                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Turn On The Motor">
+              </div>
+            </td>
+        <td>
+              <div class="col-auto">
+                <label for="inputPassword2" class="visually-hidden">Change Speed</label>
+                   <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                          <input type="radio" class="btn-check" style="background-color: red" name="turnOnMotor" id="turnOnMotor1" autocomplete="off" checked>
+                          <label class="btn btn-outline-danger" for="turnOnMotor1">Off</label>
+
+                          <input type="radio" class="btn-check" name="turnOnMotor" id="turnOnMotor2" autocomplete="off">
+                          <label class="btn btn-outline-success" for="turnOnMotor2">On</label>
+                   </div>
+
+                  </div>
+
+       </td>
+    </tr>
+    <tr>
+      <th scope="row">1</th>
+         <td>
+              <div class="col-auto">
+                <label for="staticEmail2" class="visually-hidden">Tag</label>
                 <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Speed Of X Stepper Motor">
               </div>
             </td>
@@ -136,10 +182,10 @@
 <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
     <script>
     $(document).ready(function(){
-          setInterval(function(){
-                // Reload the table of values
-                $("#myForm").load(" #myForm");
-            }, 2000);
+          {#setInterval(function(){#}
+          {#      // Reload the table of values#}
+          {#      $("#myForm").load(" #myForm");#}
+          {#  }, 2000);#}
     $("#myForm").submit(function(event){
         // Prevent the form from submitting normally
         event.preventDefault();

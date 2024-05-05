@@ -12,19 +12,24 @@ from pymodbus.payload import BinaryPayloadBuilder
 from multi_axis_robot import utils, models
 from scada.Other.Utils import connect_to_plc
 
-
+def interpretation_value(value):
+    if value > 32767:  # Check if the value is negative
+        value = value - 65536  # Convert to negative representation
+    return value
 def control_mode(request):
     data = {
                     }
     # try:
-
-    client = connect_to_plc()
-    data={
-        "inputSpeedOfStepperx":client.read_holding_registers(11).registers[0],
-        "inputSpeedOfStepperz":client.read_holding_registers(12).registers[0],
-        "DirectionOfStepperX":'0' if client.read_holding_registers(10 + 1, ).registers[0] < 0 else '1',
-        "DirectionOfStepperZ":'0' if client.read_holding_registers(11 + 1, ).registers[0] < 0 else '1',
-    }
+    #
+    #     client = connect_to_plc()
+    #     inputSpeedOfStepperx = client.read_holding_registers(11).registers[0]
+    #     inputSpeedOfStepperz = client.read_holding_registers(12).registers[0]
+    #     data={
+    #         "inputSpeedOfStepperx": inputSpeedOfStepperx,
+    #         "inputSpeedOfStepperz": inputSpeedOfStepperz,
+    #         "DirectionOfStepperX":'0' if inputSpeedOfStepperx > 32767 else '1',
+    #         "DirectionOfStepperZ":'0' if inputSpeedOfStepperz > 32767 else '1',
+    #     }
     # except:
     #     print("No Connection ")
 
