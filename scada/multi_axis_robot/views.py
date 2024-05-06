@@ -2,7 +2,7 @@ import datetime
 import os
 import json
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse,redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 from django.conf import settings
@@ -132,7 +132,7 @@ def receive_write_to_plc(request):
         switch = read_modbus_coils(client, 1)[0]
         write_modbus_coils(client, 10, True)
         if not switch:
-            return HttpResponse(status=200)
+            return redirect('multi-axis-robot-control-mode')
         if 'turnOnMotor' in request.POST:
             turnOnMotor = int(request.POST['turnOnMotor'])
             if turnOnMotor == 1:
@@ -144,7 +144,7 @@ def receive_write_to_plc(request):
                 write_modbus_coils(client, 18, False)
                 time.sleep(1)
                 write_modbus_coils(client, 5, True)
-                return HttpResponse(status=200)
+                return redirect('multi-axis-robot-control-mode')
             
         if 'inputSpeedOfStepperx' in request.POST:
             inputSpeedOfStepperx = abs( int(request.POST['inputSpeedOfStepperx']))
@@ -189,7 +189,8 @@ def receive_write_to_plc(request):
 
         
     
-        return HttpResponse(status=200)
+        
+        return redirect('multi-axis-robot-control-mode')
         # if empty return no data response code
         
 @csrf_exempt

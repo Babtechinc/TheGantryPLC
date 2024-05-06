@@ -3,7 +3,7 @@
 {% block page_name %}Multi Axis Robot{% endblock %}
 {% block page_buttons %}{% endblock %}
 {% block content %}
-<form id="myForm" method="post" class="row g-3">
+<form id="myForm" method="post" action='{% url "multi-axis-robot-receive-write-to-plc" %}' class="row g-3">
 <div class="">
                 <button type="submit" class="btn btn-primary mb-3">Write To PLC</button>
               </div>
@@ -164,19 +164,19 @@
                // Reload the table of values#}
               $("#myForm").load(" #myForm");
             }, 15000);
-    $("#myForm").submit(function(event){
-        // Prevent the form from submitting normally
-        event.preventDefault();
+    // $("#myForm").submit(function(event){
+    //     // Prevent the form from submitting normally
+    //     event.preventDefault();
 
-        // Get the form data
-        var formData = $(this).serialize();
+    //     // Get the form data
+    //     var formData = $(this).serialize();
 
-        // Post the form data to the server
-        $.post("{% url "multi-axis-robot-receive-write-to-plc" %}", formData, function(response){
-            // Handle the response from the server
-            $("#myForm").load(" #myForm");
-        });
-    });
+    //     // Post the form data to the server
+    //     $.post("{% url "multi-axis-robot-receive-write-to-plc" %}", formData, function(response){
+    //         // Handle the response from the server
+    //         $("#myForm").load(" #myForm");
+    //     });
+    // });
     $("#myFormProgram").submit(function(event){
         // Prevent the form from submitting normally
         event.preventDefault();
