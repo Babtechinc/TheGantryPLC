@@ -3,7 +3,7 @@
 {% block page_name %}Multi Axis Robot{% endblock %}
 {% block page_buttons %}{% endblock %}
 {% block content %}
-<form id="myForm" class="row g-3">
+<form id="myForm" method="post" class="row g-3">
 <div class="">
                 <button type="submit" class="btn btn-primary mb-3">Write To PLC</button>
               </div>
@@ -16,6 +16,7 @@
     </tr>
   </thead>
   <tbody>
+    {% csrf_token %}
     <tr>
       <th scope="row">1</th>
          <td>
@@ -28,33 +29,10 @@
               <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden">Change Speed</label>
                    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                          <input type="radio" class="btn-check" style="background-color: red" name="turnOnMotor" id="turnOnMotor1" autocomplete="off" checked>
+                          <input type="radio" class="btn-check" style="background-color: red" name="turnOnMotor" id="turnOnMotor1"  {% if turnOnMotor == '0'%}checked{% endif %}  value="0" autocomplete="off" checked>
                           <label class="btn btn-outline-danger" for="turnOnMotor1">Off</label>
 
-                          <input type="radio" class="btn-check" name="turnOnMotor" id="turnOnMotor2" autocomplete="off">
-                          <label class="btn btn-outline-success" for="turnOnMotor2">On</label>
-                   </div>
-
-                  </div>
-
-       </td>
-    </tr>
-    <tr>
-      <th scope="row">1</th>
-         <td>
-              <div class="col-auto">
-                <label for="staticEmail2" class="visually-hidden">Tag</label>
-                <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="Turn On The Motor">
-              </div>
-            </td>
-        <td>
-              <div class="col-auto">
-                <label for="inputPassword2" class="visually-hidden">Change Speed</label>
-                   <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-                          <input type="radio" class="btn-check" style="background-color: red" name="turnOnMotor" id="turnOnMotor1" autocomplete="off" checked>
-                          <label class="btn btn-outline-danger" for="turnOnMotor1">Off</label>
-
-                          <input type="radio" class="btn-check" name="turnOnMotor" id="turnOnMotor2" autocomplete="off">
+                          <input type="radio" class="btn-check" name="turnOnMotor" id="turnOnMotor2" value="1" autocomplete="off" {% if turnOnMotor == '1'%}checked{% endif %}>
                           <label class="btn btn-outline-success" for="turnOnMotor2">On</label>
                    </div>
 
@@ -73,7 +51,7 @@
         <td>
               <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden">Change Speed</label>
-                <input required type="number" min="1" max="100000" class="form-control" name="inputSpeedOfStepperx" value="{{ inputSpeedOfStepperx }}" id="inputSpeedOfStepperx" >
+                <input required type="number"  max="100000" class="form-control" name="inputSpeedOfStepperx" value="{{ inputSpeedOfStepperx }}" id="inputSpeedOfStepperx" >
               </div>
 
        </td>
@@ -89,7 +67,7 @@
         <td>
               <div class="col-auto">
                 <label for="inputPassword2" class="visually-hidden">Change Speed</label>
-                <input required type="number" min="1" max="100000" class="form-control" name="inputSpeedOfStepperz" value="{{ inputSpeedOfStepperz }}"  id="inputSpeedOfStepperz" >
+                <input required type="number" max="100000" class="form-control" name="inputSpeedOfStepperz" value="{{ inputSpeedOfStepperz }}"  id="inputSpeedOfStepperz" >
               </div>
 
        </td>
@@ -138,8 +116,8 @@
   </tbody>
 </table>
 </form>
-<form id="myFormProgram">
-
+<form id="myFormProgram"  method="post">
+  {% csrf_token %}
     <hr>
 <div class="bd-example">
 
@@ -182,10 +160,10 @@
 <script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
     <script>
     $(document).ready(function(){
-          {#setInterval(function(){#}
-          {#      // Reload the table of values#}
-          {#      $("#myForm").load(" #myForm");#}
-          {#  }, 2000);#}
+          setInterval(function(){
+               // Reload the table of values#}
+              $("#myForm").load(" #myForm");
+            }, 15000);
     $("#myForm").submit(function(event){
         // Prevent the form from submitting normally
         event.preventDefault();
@@ -196,7 +174,7 @@
         // Post the form data to the server
         $.post("{% url "multi-axis-robot-receive-write-to-plc" %}", formData, function(response){
             // Handle the response from the server
-            console.log(response);
+            $("#myForm").load(" #myForm");
         });
     });
     $("#myFormProgram").submit(function(event){

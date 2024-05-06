@@ -8,30 +8,34 @@ from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 from django.conf import settings
 from pymodbus.constants import Endian
 from pymodbus.payload import BinaryPayloadBuilder
-
+import time
+import math
 from multi_axis_robot import utils, models
-from scada.Other.Utils import connect_to_plc
+from scada.Other.Utils import connect_to_plc,read_modbus_coils,write_modbus_coils
 
 def interpretation_value(value):
     if value > 32767:  # Check if the value is negative
         value = value - 65536  # Convert to negative representation
-    return value
+    return abs(value)
 def control_mode(request):
     data = {
                     }
-    # try:
-    #
-    #     client = connect_to_plc()
-    #     inputSpeedOfStepperx = client.read_holding_registers(11).registers[0]
-    #     inputSpeedOfStepperz = client.read_holding_registers(12).registers[0]
-    #     data={
-    #         "inputSpeedOfStepperx": inputSpeedOfStepperx,
-    #         "inputSpeedOfStepperz": inputSpeedOfStepperz,
-    #         "DirectionOfStepperX":'0' if inputSpeedOfStepperx > 32767 else '1',
-    #         "DirectionOfStepperZ":'0' if inputSpeedOfStepperz > 32767 else '1',
-    #     }
-    # except:
-    #     print("No Connection ")
+    try:
+    
+        client = connect_to_plc()
+        inputSpeedOfStepperx =  client.read_holding_registers(11).registers[0]
+        inputSpeedOfStepperz = client.read_holding_registers(12).registers[0]
+        turnOnMotor = read_modbus_coils(client, 18)[0]
+        
+        data={
+            "inputSpeedOfStepperx": interpretation_value( inputSpeedOfStepperx),
+            "inputSpeedOfStepperz": interpretation_value(inputSpeedOfStepperz),
+            "DirectionOfStepperX":'0' if inputSpeedOfStepperx > 32767 else '1',
+            "DirectionOfStepperZ":'0' if inputSpeedOfStepperz > 32767 else '1',
+            "turnOnMotor":'0' if not turnOnMotor else '1',
+        }
+    except:
+        print("No Connection ")
 
     return render(
                     request,
@@ -124,13 +128,33 @@ def receive_write_to_plc(request):
         client = connect_to_plc()
 
         print(client.read_holding_registers(11).registers)
+        
+        switch = read_modbus_coils(client, 1)[0]
+        write_modbus_coils(client, 10, True)
+        if not switch:
+            return HttpResponse(status=200)
+        if 'turnOnMotor' in request.POST:
+            turnOnMotor = int(request.POST['turnOnMotor'])
+            if turnOnMotor == 1:
+                write_modbus_coils(client, 5, False)
+                time.sleep(1)
+                write_modbus_coils(client, 18, True)
+
+            else:
+                write_modbus_coils(client, 18, False)
+                time.sleep(1)
+                write_modbus_coils(client, 5, True)
+                return HttpResponse(status=200)
+            
         if 'inputSpeedOfStepperx' in request.POST:
-            inputSpeedOfStepperx = int(request.POST['inputSpeedOfStepperx'])
+            inputSpeedOfStepperx = abs( int(request.POST['inputSpeedOfStepperx']))
             if 'DirectionOfStepperX' in request.POST:
                 
                 
                 DirectionOfStepperX = request.POST['DirectionOfStepperX']
                 if DirectionOfStepperX =='0':
+                    
+                    print("heleo")
 
                     inputSpeedOfStepperx= -1 * inputSpeedOfStepperx
                     builder = BinaryPayloadBuilder(byteorder=Endian.BIG, wordorder=Endian.BIG)
@@ -142,11 +166,12 @@ def receive_write_to_plc(request):
 
                     reg = client.write_register(10+1,inputSpeedOfStepperx)
         if 'inputSpeedOfStepperz' in request.POST:
-            inputSpeedOfStepperz = int(request.POST['inputSpeedOfStepperz'])
+            inputSpeedOfStepperz = abs(int(request.POST['inputSpeedOfStepperz']))
 
             if 'DirectionOfStepperZ' in request.POST:
                 DirectionOfStepperZ = request.POST['DirectionOfStepperZ']
                 if DirectionOfStepperZ =='0':
+                    print("hele")
                     inputSpeedOfStepperz= -1 * inputSpeedOfStepperz
                     builder = BinaryPayloadBuilder(byteorder=Endian.BIG, wordorder=Endian.BIG)
                     builder.add_16bit_int(inputSpeedOfStepperz)
@@ -154,6 +179,15 @@ def receive_write_to_plc(request):
                     client.write_registers(11 + 1, payload, skip_encode=True, unit=1)
                 else:
                     reg = client.write_register(11+1,inputSpeedOfStepperz)
+        write_modbus_coils(client, 18, False)
+        time.sleep(1)
+        write_modbus_coils(client, 5, True)
+        time.sleep(1)
+        write_modbus_coils(client, 5, False)
+        time.sleep(1)
+        write_modbus_coils(client, 18, True)
+
+        
     
         return HttpResponse(status=200)
         # if empty return no data response code

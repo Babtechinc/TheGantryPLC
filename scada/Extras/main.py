@@ -152,10 +152,10 @@ def main():
     sm_red_x_pos = PLCTag("Red SM Positon", 1, None)
     sm_red_x_vel = PLCTag("Red SM Velocity", 1, None)
 
-    write_modbus_coils(client, 10, True)
-    write_modbus_coils(client, 5, True)
-    time.sleep(1)
-    write_modbus_coils(client, 5, False)
+    # write_modbus_coils(client, 10, True)
+    # write_modbus_coils(client, 5, True)
+    # time.sleep(1)
+    # write_modbus_coils(client, 5, False)
 
     while True:
         # print(client.read_holding_registers(0,6).registers)
